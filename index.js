@@ -21,6 +21,7 @@ module.exports = function netjet(options) {
     styles: true,
     cache: {},
     attributes: [],
+    excludes: [],
   });
 
   var cache = new LRU(options.cache);

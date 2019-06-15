@@ -121,13 +121,28 @@ describe('preload', function() {
           .expect(200, done);
       });
 
-      it('should create Link header for mutliple scripts', function(done) {
+      it('should create Link header for multiple scripts', function(done) {
         request(this.server)
           .get('/blog/multi-script')
           .expect('Content-Type', 'text/html; charset=utf-8')
           .expect(
             'Link',
             '</jquery.min.js>; rel=preload; as=script, </bootstrap.min.js>; rel=preload; as=script'
+          )
+          .expect(200, done);
+      });
+
+      it('should create Link header for multiple scripts while removing excluded scripts', function(done) {
+        var server = createServer({
+          excludes: ['**/vendor-es5.js', '**/main-es5.js'],
+        });
+
+        request(server)
+          .get('/blog/multi-script-with-exclude')
+          .expect('Content-Type', 'text/html; charset=utf-8')
+          .expect(
+            'Link',
+            '</vendor-es2015.js>; rel=preload; as=script, </main-es2015.js>; rel=preload; as=script'
           )
           .expect(200, done);
       });
@@ -431,6 +446,17 @@ function createServer(options) {
       res.setHeader('Content-Type', 'text/html; charset=utf-8');
       res.write(
         '<script src="/jquery.min.js"></script><script src="/bootstrap.min.js"></script>'
+      );
+      res.end();
+    },
+  });
+
+  router.route('/blog/multi-script-with-exclude', {
+    GET: function(req, res) {
+      res.statusCode = 200;
+      res.setHeader('Content-Type', 'text/html; charset=utf-8');
+      res.write(
+        '<script src="/vendor-es2015.js" type="module"></script><script src="/main-es2015.js" type="module"></script><script src="/vendor-es5.js" nomodule></script><script src="/main-es5.js" nomodule></script>'
       );
       res.end();
     },

@@ -30,6 +30,10 @@ express()
 
   List of custom attributes that should be added to the Preload Link headers.
 
+* **excludes**: `Array<String>`
+
+  List of [minimatch][minimatch] resources to exclude from the link header.
+
 ## License
 
 [![MIT License](https://img.shields.io/badge/license-MIT-blue.svg?style=flat-square)](https://www.tldrlegal.com/l/mit) see `LICENSE.md`.
@@ -37,3 +41,4 @@ express()
 [preload]: https://www.w3.org/TR/preload/
 [posthtml]: https://github.com/posthtml/posthtml#readme
 [lru-cache]: https://github.com/isaacs/node-lru-cache#readme
+[minimatch]: https://www.npmjs.com/package/minimatch

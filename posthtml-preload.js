@@ -1,6 +1,12 @@
 'use strict';
+var minimatch = require('minimatch');
 
 module.exports = function(options, foundEntries) {
+  function include(entry) {
+    var excluded = options.excludes.find(exclude => minimatch(entry, exclude));
+    return !!excluded === false;
+  }
+
   return function(tree) {
     var matchers = [];
 
@@ -42,19 +48,31 @@ module.exports = function(options, foundEntries) {
       tree.match(matchers, function(node) {
         switch (node.tag) {
           case 'base':
-            foundEntries.push([node.attrs.href, 'base']);
+            var entry = node.attrs.href;
+            if (include(entry)) {
+              foundEntries.push([entry, 'base']);
+            }
             break;
           case 'img':
             // Ensure we're not preloading an inline image
             if (node.attrs.src.indexOf('data:') !== 0) {
-              foundEntries.push([node.attrs.src, 'image']);
+              var entry = node.attrs.src;
+              if (include(entry)) {
+                foundEntries.push([entry, 'image']);
+              }
             }
             break;
           case 'script':
-            foundEntries.push([node.attrs.src, 'script']);
+            var entry = node.attrs.src;
+            if (include(entry)) {
+              foundEntries.push([entry, 'script']);
+            }
             break;
           case 'link':
-            foundEntries.push([node.attrs.href, 'style']);
+            var entry = node.attrs.href;
+            if (include(entry)) {
+              foundEntries.push([entry, 'style']);
+            }
             break;
           // no default
         }
